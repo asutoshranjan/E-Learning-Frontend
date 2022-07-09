@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:file_picker/_internal/file_picker_web.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:file_picker/file_picker.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+import 'package:url_launcher/link.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -117,8 +117,6 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   SizedBox(height: 20),
 
-                  Text(file),
-
                   // Thumbnail Location Input
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -152,8 +150,6 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   SizedBox(height: 20),
 
-                  Text(thumbnailfilelocation),
-
                   // title Input
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -186,8 +182,6 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   SizedBox(height: 20),
 
-                  Text(title),
-
                   // Description Input
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -219,8 +213,6 @@ class _AsciiApiState extends State<AsciiApi> {
                   ),
 
                   SizedBox(height: 20),
-
-                  Text(description),
 
                   // Keywords Input
                   SizedBox(
@@ -327,7 +319,51 @@ class _AsciiApiState extends State<AsciiApi> {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
+
+                  if (outvideoid != "") Link(
+                    target: LinkTarget.blank,
+                    uri: Uri.parse("https://www.youtube.com/watch?v=$outvideoid"),
+                    builder:(context, followLink) => RaisedButton(
+                      onPressed: followLink,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      color: Colors.green[200],
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.verified_outlined,
+                              color: Colors.green[800],
+                              size: 30,
+                            ),
+                            SizedBox(height: 3),
+                            Text(
+                              "Upload Successful",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  letterSpacing: 1,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green[800]),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              "https://www.youtube.com/watch?v=$outvideoid",
+                              style: TextStyle(
+                                  fontSize: 13.4,
+                                  letterSpacing: 0.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green[800],
+                                  decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
 
                   if (flag && outvideoid == "")
                     Container(
@@ -335,36 +371,17 @@ class _AsciiApiState extends State<AsciiApi> {
                       width: 100,
                       child: LiquidCircularProgressIndicator(
                         value: 0.45, // Defaults to 0.5.
-                        valueColor: AlwaysStoppedAnimation(Color(0xffFDB99B)), // Defaults to the current Theme's accentColor.
-                        backgroundColor: Colors.white, // Defaults to the current Theme's backgroundColor.
+                        valueColor: AlwaysStoppedAnimation(Color(
+                            0xffFDB99B)), // Defaults to the current Theme's accentColor.
+                        backgroundColor: Colors
+                            .white, // Defaults to the current Theme's backgroundColor.
                         borderColor: Color(0xffc6a9ff),
                         borderWidth: 3.0,
-                        direction: Axis.vertical, // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.vertical.
+                        direction: Axis
+                            .vertical, // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.vertical.
                         center: Text(" "),
                       ),
                     ),
-
-                  if (outvideoid != "")
-                    Column(
-                      children: [
-                        Text("Upload Succesful!!!"),
-                        Text("Video ID : $outvideoid"),
-                        Text("Title : $outtitle"),
-                        Text("Video File : $outvideofile"),
-                        Text("Thumbnail : $outthumbnail"),
-                      ],
-                    ),
-
-                  // RaisedButton(
-                  //   onPressed: () async{
-                  //     var responce = await http.get(Uri.parse(url));
-                  //     var decoded = jsonDecode(responce.body) as Map<String, dynamic>;
-                  //     setState(() {
-                  //       ascii = decoded["output"];
-                  //     });
-                  //   },
-                  //   child: Text(" GENERATE "),
-                  // ),
                   SizedBox(height: 20),
                 ],
               ),
