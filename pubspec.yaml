@@ -38,6 +38,7 @@ dependencies:
   file_picker:
   liquid_progress_indicator:
   url_launcher:
+  gsheets:
 
 dev_dependencies:
   flutter_test:

@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:e_learning_ytuploads/api/google_sheets/videos_sheets_api.dart';
+import 'package:e_learning_ytuploads/videodata.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await VideosSheetsApi.init();
   runApp(const MyApp());
 }
 
@@ -35,6 +39,8 @@ class AsciiApi extends StatefulWidget {
 }
 
 class _AsciiApiState extends State<AsciiApi> {
+  List<Video> videos = [];
+  List<Map<String, dynamic>> mapvideos = [];
   String videofilelocation = "";
   String thumbnailfilelocation = "";
   String title = "";
@@ -52,6 +58,10 @@ class _AsciiApiState extends State<AsciiApi> {
   String outkeywords = "";
   String outprivacyStatus = "";
   String outthumbnail = "";
+  List<String> sheet_titles = [];
+  List<String> sheet_descriptions = [];
+  List<String> sheet_keywords = [];
+  int sheet_length = 0;
   bool flag = false;
   final videofileController = TextEditingController();
   final thumbnailfileController = TextEditingController();
@@ -62,8 +72,32 @@ class _AsciiApiState extends State<AsciiApi> {
   @override
   void initState() {
     super.initState();
+    getVideos();
     videofileController.addListener(() => setState(() {}));
     thumbnailfileController.addListener(() => setState(() {}));
+  }
+
+  Future getVideos() async {
+    final videos = await VideosSheetsApi.getAll();
+
+    setState(() {
+      this.videos = videos;
+      sheet_length = videos.length;
+    });
+
+    setState(() {
+      if (videos.isNotEmpty) {
+        for (int i = 0; i < sheet_length; i++) {
+          mapvideos.add(videos[i].toJson());
+        }
+      }
+      for (int i = 0; i < mapvideos.length; i++) {
+        var snap = mapvideos[i];
+        sheet_titles.add(snap["title"]);
+        sheet_descriptions.add(snap["description"]);
+        sheet_keywords.add(snap["keywords"]);
+      }
+    });
   }
 
   @override
@@ -321,49 +355,146 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   SizedBox(height: 30),
 
-                  if (outvideoid != "") Link(
+                  //Open Sheet
+                  Link(
                     target: LinkTarget.blank,
-                    uri: Uri.parse("https://www.youtube.com/watch?v=$outvideoid"),
-                    builder:(context, followLink) => RaisedButton(
+                    uri: Uri.parse(
+                        "https://docs.google.com/spreadsheets/d/1o71ygg8kFr7L8fvdcF3t_R1igS2he0-nA9ISWWpq5cM/edit?usp=sharing"),
+                    builder: (context, followLink) => RaisedButton.icon(
                       onPressed: followLink,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      color: Colors.green[200],
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.verified_outlined,
-                              color: Colors.green[800],
-                              size: 30,
+                      icon: Icon(Icons.description_outlined),
+                      label: Text("Open Sheet"),
+                    ),
+                  ),
+
+                  SizedBox(height: 30),
+
+                  //Save Data of Sheet
+                  RaisedButton(
+                    onPressed: () {
+                      setState(() {
+                        mapvideos = [];
+                        sheet_titles = [];
+                        sheet_descriptions = [];
+                        sheet_keywords = [];
+                        getVideos();
+                      });
+                    },
+                    child: Text(" Save Sheet "),
+                  ),
+
+                  SizedBox(height: 20),
+
+                  //Get Data :
+                  Container(
+                    height: 160,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    child: ListView(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      children: [
+                        Card(
+                          elevation: 20,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Center(
+                                    child: Text("Index"),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: Center(
+                                    child: Text("Title"),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Center(
+                                    child: Text("Status"),
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 3),
-                            Text(
-                              "Upload Successful",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  letterSpacing: 1,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[800]),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              "https://www.youtube.com/watch?v=$outvideoid",
-                              style: TextStyle(
+                          ),
+                        ),
+                        if (sheet_titles.isNotEmpty)
+                          for (int i = 0; i < sheet_titles.length; i++)
+                            if (sheet_titles[i] != "")
+                              Card(
+                                elevation: 20,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 12),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(child: Text(sheet_titles[i])),
+                                      Expanded(
+                                          child: Text(sheet_descriptions[i])),
+                                      Expanded(child: Text(sheet_keywords[i])),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 50),
+
+                  if (outvideoid != "")
+                    Link(
+                      target: LinkTarget.blank,
+                      uri: Uri.parse(
+                          "https://www.youtube.com/watch?v=$outvideoid"),
+                      builder: (context, followLink) => RaisedButton(
+                        onPressed: followLink,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        color: Colors.green[200],
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 18),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.verified_outlined,
+                                color: Colors.green[800],
+                                size: 30,
+                              ),
+                              SizedBox(height: 3),
+                              Text(
+                                "Upload Successful",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    letterSpacing: 1,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[800]),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                "https://www.youtube.com/watch?v=$outvideoid",
+                                style: TextStyle(
                                   fontSize: 13.4,
                                   letterSpacing: 0.5,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green[800],
                                   decoration: TextDecoration.underline,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
 
                   if (flag && outvideoid == "")
                     Container(
