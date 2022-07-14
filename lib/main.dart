@@ -58,11 +58,27 @@ class _AsciiApiState extends State<AsciiApi> {
   String outkeywords = "";
   String outprivacyStatus = "";
   String outthumbnail = "";
+
+  List<String> list_outvideofile = [];
+  List<String> list_outvideoid = [];
+  List<String> list_outtitle = [];
+  List<String> list_outdescription = [];
+  List<String> list_outcategory = [];
+  List<String> list_outkeywords = [];
+  List<String> list_outprivacyStatus = [];
+  List<String> list_outthumbnail = [];
+
+  List<int> sheet_slnos = [];
+  List<String> sheet_video_files = [];
+  List<String> sheet_thumbnail_files = [];
   List<String> sheet_titles = [];
   List<String> sheet_descriptions = [];
+  List<String> sheet_category = [];
   List<String> sheet_keywords = [];
+  List<String> sheet_privacystatus = [];
   int sheet_length = 0;
   bool flag = false;
+  bool track_flag = true;
   final videofileController = TextEditingController();
   final thumbnailfileController = TextEditingController();
   final titleController = TextEditingController();
@@ -93,9 +109,15 @@ class _AsciiApiState extends State<AsciiApi> {
       }
       for (int i = 0; i < mapvideos.length; i++) {
         var snap = mapvideos[i];
+        sheet_slnos.add(snap["slno"]);
+        sheet_video_files.add(snap["video_file"].replaceAll(r'\', r'\\'));
+        sheet_thumbnail_files
+            .add(snap["thumbnail_file"].replaceAll(r'\', r'\\'));
         sheet_titles.add(snap["title"]);
         sheet_descriptions.add(snap["description"]);
+        sheet_category.add(snap["category"]);
         sheet_keywords.add(snap["keywords"]);
+        sheet_privacystatus.add(snap["privacystatus"]);
       }
     });
   }
@@ -113,7 +135,7 @@ class _AsciiApiState extends State<AsciiApi> {
           child: Row(
             children: [
               Container(
-                  width: MediaQuery.of(context).size.width * 0.54,
+                  width: MediaQuery.of(context).size.width * 0.40,
                   color: Colors.redAccent),
               Column(
                 children: [
@@ -121,7 +143,7 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   // Video Location Input
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.54,
                     child: TextField(
                       onChanged: (value) => setState(() {
                         videofilelocation = value;
@@ -153,7 +175,7 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   // Thumbnail Location Input
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.54,
                     child: TextField(
                       onChanged: (value) => setState(() {
                         thumbnailfilelocation = value;
@@ -186,7 +208,7 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   // title Input
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.54,
                     child: TextField(
                       onChanged: (value) => setState(() {
                         title = value;
@@ -218,7 +240,7 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   // Description Input
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.54,
                     child: TextField(
                       onChanged: (value) => setState(() {
                         description = value;
@@ -250,7 +272,7 @@ class _AsciiApiState extends State<AsciiApi> {
 
                   // Keywords Input
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.54,
                     child: TextField(
                       onSubmitted: (value) => setState(() {
                         url = value;
@@ -284,7 +306,7 @@ class _AsciiApiState extends State<AsciiApi> {
                   SizedBox(height: 20),
 
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.54,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -374,13 +396,18 @@ class _AsciiApiState extends State<AsciiApi> {
                     onPressed: () {
                       setState(() {
                         mapvideos = [];
+                        sheet_slnos = [];
+                        sheet_video_files = [];
+                        sheet_thumbnail_files = [];
                         sheet_titles = [];
                         sheet_descriptions = [];
+                        sheet_category = [];
                         sheet_keywords = [];
+                        sheet_privacystatus = [];
                         getVideos();
                       });
                     },
-                    child: Text(" Save Sheet "),
+                    child: Text(" Update Sheet "),
                   ),
 
                   SizedBox(height: 20),
@@ -388,44 +415,85 @@ class _AsciiApiState extends State<AsciiApi> {
                   //Get Data :
                   Container(
                     height: 160,
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.54,
                     child: ListView(
                       padding:
                           EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                       children: [
                         Card(
                           elevation: 20,
+                          color: sheet_titles.isNotEmpty
+                              ? Color(0xffd582fc)
+                              : Color(0xffdfbdfd),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 12),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
+                              children: const [
                                 Expanded(
                                   flex: 1,
                                   child: Center(
-                                    child: Text("Index"),
+                                    child: Text(
+                                      "Index",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        letterSpacing: 1.2,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Expanded(
-                                  flex: 5,
+                                  flex: 4,
                                   child: Center(
-                                    child: Text("Title"),
+                                    child: Text(
+                                      "File",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        letterSpacing: 1.2,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 7,
+                                  child: Center(
+                                    child: Text(
+                                      "Title",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        letterSpacing: 1.5,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Center(
-                                    child: Text("Status"),
+                                    child: Text(
+                                      "Status",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        letterSpacing: 1.4,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        if (sheet_titles.isNotEmpty)
-                          for (int i = 0; i < sheet_titles.length; i++)
-                            if (sheet_titles[i] != "")
+                        if (sheet_slnos.isNotEmpty)
+                          for (int i = 0; i < sheet_slnos.length; i++)
+                            if (sheet_video_files[i] != "")
                               Card(
                                 elevation: 20,
                                 child: Padding(
@@ -435,10 +503,25 @@ class _AsciiApiState extends State<AsciiApi> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Expanded(child: Text(sheet_titles[i])),
                                       Expanded(
-                                          child: Text(sheet_descriptions[i])),
-                                      Expanded(child: Text(sheet_keywords[i])),
+                                          flex: 1,
+                                          child: Center(
+                                              child: Text(
+                                                  sheet_slnos[i].toString()))),
+                                      Expanded(
+                                          flex: 4,
+                                          child: Center(
+                                              child:
+                                                  Text(sheet_video_files[i]))),
+                                      Expanded(
+                                          flex: 7,
+                                          child: Center(
+                                              child: Text(sheet_titles[i]))),
+                                      Expanded(
+                                          flex: 2,
+                                          child: Center(
+                                              child: Text(
+                                                  sheet_privacystatus[i]))),
                                     ],
                                   ),
                                 ),
@@ -446,8 +529,60 @@ class _AsciiApiState extends State<AsciiApi> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 30),
 
-                  SizedBox(height: 50),
+                  RaisedButton(
+                    onPressed: () async {
+                      if (sheet_video_files.isNotEmpty) {
+                        String posturl = "http://127.0.0.1:5000/api";
+                        final responce = await http.post(Uri.parse(posturl),
+                            body: jsonEncode({
+                              "video": sheet_video_files[0],
+                              "title": sheet_titles[0],
+                              "description": sheet_descriptions[0],
+                              "category": sheet_category[0],
+                              "keywords": sheet_keywords[0],
+                              "privacyStatus": sheet_privacystatus[0],
+                              "thumbnail": sheet_thumbnail_files[0],
+                            }));
+                      }
+                    },
+                    child: Text(" Save Sheet"),
+                  ),
+                  SizedBox(height: 20),
+                  RaisedButton(
+                    onPressed: () async{
+                      if (sheet_video_files.isNotEmpty) {
+                        String posturl = "http://127.0.0.1:5000/api";
+                        final responce = await http.post(Uri.parse(posturl),
+                            body: jsonEncode({
+                              "video": sheet_video_files[0],
+                              "title": sheet_titles[0],
+                              "description": sheet_descriptions[0],
+                              "category": sheet_category[0],
+                              "keywords": sheet_keywords[0],
+                              "privacyStatus": sheet_privacystatus[0],
+                              "thumbnail": sheet_thumbnail_files[0],
+                            }));
+                      }
+
+                      Future.delayed(Duration(seconds: 5), () async{
+                        String geturl = "http://127.0.0.1:5000/api";
+                        final response = await http.get(Uri.parse(geturl));
+                        final decoded =
+                        jsonDecode(response.body) as Map<String, dynamic>;
+                        setState(() {
+                          list_outvideofile[0] = decoded["videofile"];
+                          list_outthumbnail[0] = decoded["thumbnail"];
+                          list_outtitle[0] = decoded["title"];
+                          outvideoid = decoded["videoid"];
+                        });
+                      });
+                    },
+                    child: Text(" UPLOAD 1/$sheet_length"),
+                  ),
+
+                  SizedBox(height: 70),
 
                   if (outvideoid != "")
                     Link(
@@ -480,6 +615,7 @@ class _AsciiApiState extends State<AsciiApi> {
                                     color: Colors.green[800]),
                               ),
                               SizedBox(height: 5),
+                              SizedBox(height: 2),
                               Text(
                                 "https://www.youtube.com/watch?v=$outvideoid",
                                 style: TextStyle(
