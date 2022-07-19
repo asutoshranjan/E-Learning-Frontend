@@ -1,16 +1,37 @@
 # Swift Load
 
-The Frontend Flutter App For E-Learning Youtube Uploads
+Swift Load is a YouTube video uploader that helps you to Upload Multiple Videos on YouTube directly from a google sheet very
+conveniently with just One Click. Built during my Internship at IIIT DELHI under Prof. Anuj Grover Project E-Learning (A Online Lectures Video Workflow Optimization Project) as we had a lot of videos to upload on youtube from spreadsheet data. It uses the GoogleSheet API for fetching data from a sheet and send that data to its backend through a POST request, which is then used by the backend flask app to upload the desiered videos from the user's system. Additionaly, it has a data sheet preview in the app, an update sheet button to fetch the lastes data if its changed, and a form if the user wants to upload a single video. The UI is simple minimal responsive and fun to use providing a good User Experience.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Follow this guide to setup Swift Load on your local machine
+- Set up Swift Load's Backend Server [Swift Load - Server](https://github.com/asutoshranjan/E-Learning-Backend)
+- Now as our frontend Flutter application can communicate with the server we are ready to **Upload Videos** on YouTube
+- Install all the required packages and dependencies run
+```
+flutter pub get
+```
 
-A few resources to get you started if this is your first Flutter project:
+<br />
+<br />
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Swift Load Guide
+- Click **Open Sheet** to Open the Google Sheet ![Asset 6](https://user-images.githubusercontent.com/81508078/179820671-a2c35bd4-7c0f-4ee9-8662-c320246e0239.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- After you make the necessary changes click on **Update Sheet** ![Asset 8](https://user-images.githubusercontent.com/81508078/179820974-1d1924b9-fbec-4629-b63d-d96e7feabd59.png)
+
+- The to **Upload Preview** list shows all the videos to be uploaded ![Asset 9](https://user-images.githubusercontent.com/81508078/179821266-d3e2a7ee-07da-4c75-86cc-0fb1d311ac9c.png)
+
+- Now just click on the **Upload** button to upload the videos ![Asset 10](https://user-images.githubusercontent.com/81508078/179821384-8b3d2188-3381-4381-96b5-83b6da731822.png)
+
+- If you want to upload a single video without using the sheet you can do so by filling the upload a video fields ![Asset 11](https://user-images.githubusercontent.com/81508078/179821452-f3c2374f-b4b3-4929-8895-d599be1caa2d.png)
+
+
+<br />
+If you liked the project give it a star<br />
+If you want to add some additional functionalities open an issue I will try implimenting or you can also send a pull request.<br />
+<br />
+Keep Building!💙
+
+
