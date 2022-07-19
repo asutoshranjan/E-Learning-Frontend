@@ -1,5 +1,9 @@
 # Swift Load
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/81508078/179827193-ffdd1d75-5d39-4550-b949-63bbd5312608.gif" alt="animated" />
+</p>
+<br />
 Swift Load is a YouTube video uploader that helps you to Upload Multiple Videos on YouTube directly from a google sheet very
 conveniently with just One Click. Built during my Internship at IIIT DELHI under Prof. Anuj Grover Project E-Learning (A Online Lectures Video Workflow Optimization Project) as we had a lot of videos to upload on youtube from spreadsheet data. It uses the GoogleSheet API for fetching data from a sheet and send that data to its backend through a POST request, which is then used by the backend flask app to upload the desiered videos from the user's system. Additionaly, it has a data sheet preview in the app, an update sheet button to fetch the lastes data if its changed, and a form if the user wants to upload a single video. The UI is simple minimal responsive and fun to use providing a good User Experience.
 
